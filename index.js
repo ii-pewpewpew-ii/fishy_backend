@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const routers = require('./routers');
 const app = express();
-
+const client = require("./config/mqtt");
+client;
 
 
 
@@ -13,6 +14,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/auth",routers.authRouter);
+
+app.use("/admin",routers.adminRouter);
 
 const dbUri = process.env.MONGODB_URI;
 console.log(dbUri + " in indexjs")

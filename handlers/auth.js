@@ -1,7 +1,4 @@
-const bcrypt = require("bcrypt");
 const { User, Otp } = require("../models");
-const router = require("../routers/auth");
-const {v4 :  uuidv4} = require('uuid');
 const client = require("../config/mqtt");
 
 const handleRegister = async (req, res) => {

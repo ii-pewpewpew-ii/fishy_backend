@@ -6,18 +6,18 @@ mongoose.connect(URI);
 
 const fishTripSchema = new mongoose.Schema({
     id : {
-        type : mongoose.Schema.Types.ObjectId,
-        default : mongoose.Types.ObjectId,
+        type : String,
         required : true,
         unique : true
     },
-    phoneNumber : String,
+    tripId : String,
+    phonenumber : String,
     location : [{
         lat : String,
         long : String,
         timestamp : String
     }],
-    speciesFound : {type : Array, "default" : []},
+    speciesfound : {type : Array, "default" : []},
     tripStatus : Number
 })
 

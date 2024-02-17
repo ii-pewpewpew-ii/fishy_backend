@@ -5,7 +5,7 @@ const {FishingTrip} = require("../models");
 
 const handleLocationUpdate = async(messageJson) =>{
     try{
-        const phoneNumber = messagJson.fromNumber;
+        const phoneNumber = messageJson.fromNumber;
         const currentTrip = await FishingTrip.findOne({
             phonenumber : phoneNumber
         });
@@ -40,7 +40,7 @@ const handleCaptureUpdate = async (messageJson) => {
             return;
         }
 
-        currentTrip.species = species;
+        currentTrip.speciesfound.push(species) ;
         currentTrip.location.push({
             lat : lat,
             long : long,
@@ -48,7 +48,6 @@ const handleCaptureUpdate = async (messageJson) => {
         });
 
         console.log("Updated species data : " + currentTrip);
-
         currentTrip.save();
 
     }catch(err){
