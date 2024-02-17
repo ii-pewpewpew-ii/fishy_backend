@@ -1,6 +1,6 @@
 
 const { User, FishingTrip } = require("../models");
-const client = require("../config/mqtt");
+
 
 const findAllHandler = async (req, res) => {
     try {
@@ -43,14 +43,10 @@ function generateOtp() {
 
 const tripStartHandler = async (phoneNumber) => {
     try {
-        const existingTrip = await FishingTrip.find({
-            phonenumber: phoneNumber
-        });
-
-        for (const trip of existingTrip) {
-            trip.tripstatus = 0;
-            await trip.save();
-        }
+        const updateResult = await FishingTrip.updateMany(
+            { phonenumber: phoneNumber, tripstatus: 1 }, 
+            { $set: { tripstatus: 0 } } 
+        );
         const tripId = generateOtp();
         const newTrip = new FishingTrip(
             {
