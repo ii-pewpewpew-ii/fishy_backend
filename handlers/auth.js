@@ -1,4 +1,5 @@
 const { User, Otp } = require("../models");
+const client = require("../config/mqtt");
 
 const handleRegister = async (req, res) => {
     try {
@@ -89,6 +90,26 @@ const handleGetOtp = async (req, res) => {
 
 }
 
+function send_otp(otp_number,phoneNumber) {
+    client.publish("smser", JSON.stringify({
+        "from": "+918925423535",
+        "to": `+91${phoneNumber}`,
+        "msg": "Your OTP is " + otp_number + ". Don't Share OTP."
+    }), function (err) {
+        if (err) {
+            console.error("Error occurred while publishing message:", err);
+        } else {
+            console.log("Message published successfully");
+        }
+    });
+}
+
+function generateOtp() {
+    let otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(otp);
+    return otp;
+}
+
 const handleLogin = async (req, res) => {
     try {
         console.log("Handling Login");
@@ -111,15 +132,6 @@ const handleLogin = async (req, res) => {
         console.error(err);
         res.status(200).send({ message: "Failed to register user" });
     }
-}
-
-
-
-
-function generateOtp() {
-    let otp = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log(otp);
-    return otp;
 }
 
 module.exports = { handleRegister, handleCheckPhoneNumber, handleGetOtp, handleLogin };

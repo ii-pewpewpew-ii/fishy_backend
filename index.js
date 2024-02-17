@@ -19,6 +19,8 @@ app.use("/auth",routers.authRouter);
 
 app.use("/admin",routers.adminRouter);
 
+app.use("/fishingtrip",routers.fishingTripRouter);
+
 const dbUri = process.env.MONGODB_URI;
 console.log(dbUri + " in indexjs")
 mongoose.connect(dbUri);

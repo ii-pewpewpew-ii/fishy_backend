@@ -14,8 +14,15 @@ const fishTripSchema = new mongoose.Schema({
         speciesfound :String,
     }],
     tripstatus : Number
+});
+
+const suggestionRequestSchema = new mongoose.Schema({
+    lat : String,
+    long : String,
+    phonenumber : String
 })
 
+const FishingSuggestion = mongoose.model("fishingsuggestion",suggestionRequestSchema);
 const FishingTrip = mongoose.model("fishingtrip",fishTripSchema);
 
-module.exports = {FishingTrip};
+module.exports = {FishingTrip,FishingSuggestion};

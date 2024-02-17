@@ -1,4 +1,4 @@
 const {User,Otp} = require("./user");
-const {FishingTrip} = require("./fishingTrip");
+const {FishingTrip,FishingSuggestion} = require("./fishingTrip");
 
-module.exports = {User,Otp,FishingTrip};
+module.exports = {User,Otp,FishingTrip,FishingSuggestion};
