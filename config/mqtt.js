@@ -34,10 +34,20 @@ const handleMessage = async(parsedMessage)=>{
         handleCaptureUpdate({fromNumber : parsedMessage.from,lat : contents[1],long : contents[2],timestamp : contents[3],species : contents[4]});
     }else if(contents[0] === 'Trip' && contents[1] === 'started'){
         tripStartHandler(parsedMessage.from)
+    }else if(contents[0] === 'Trip' && contents[1] === 'ended'){
+        tripEndHandler(parsedMessage.from);
     }
 }
 
-
+async function tripEndHandler(phoneNumber){    
+    await FishingTrip.updateOne({
+        phonenumber : phoneNumber,
+        tripstatus : 1
+    },
+    {
+        $set : 0
+    });
+}
 function generateOtp() {
     let otp = Math.floor(100000 + Math.random() * 900000).toString();
     console.log(otp);
