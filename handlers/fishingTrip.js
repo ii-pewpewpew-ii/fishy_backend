@@ -13,7 +13,7 @@ const handleLocationUpdate = async(messageJson) =>{
             console.log("Cannot find trip with phone Number");
             return;
         }
-        currentTrip.location.push({lat : messageJson.lat, long : messageJson.long, timestamp : messageJson.timestamp});
+        currentTrip.location.push({lat : messageJson.lat, long : messageJson.long, timestamp : messageJson.timestamp,speciesfound : ""});
         currentTrip.save();
         console.log("Location Updated Successfully");
         console.log("Updated location data : " + currentTrip);
@@ -40,11 +40,11 @@ const handleCaptureUpdate = async (messageJson) => {
             return;
         }
 
-        currentTrip.speciesfound.push(species) ;
         currentTrip.location.push({
             lat : lat,
             long : long,
-            timestamp : timestamp
+            timestamp : timestamp,
+            speciesfound : species
         });
 
         console.log("Updated species data : " + currentTrip);
