@@ -1,30 +1,38 @@
 
-const {User, FishingTrip} = require("../models");
+const { User, FishingTrip } = require("../models");
 
 
-const findAllHandler = async (req,res)=> {
-try{
-    const allActiveFishingTrips = await FishingTrip.find({
-        tripStatus : 1
-    });
-    let allUserDetails = []
-    allActiveFishingTrips.forEach(async (doc)=>{
-        let userDetail = await User.findOne({
-            phonenumber : doc.phonenumber
+const findAllHandler = async (req, res) => {
+    try {
+        const allActiveFishingTrips = await FishingTrip.find({
+            tripstatus: 1
         });
-        allUserDetails.push(userDetail);
-    });
-    return res.status(200).json({
-        userDetails : allUserDetails,
-        fishingTripDetails : allActiveFishingTrips
-    });    
+
+        const userDetailsPromises = allActiveFishingTrips.map(async (doc) => {
+            const userDetail = await User.findOne({ phonenumber: doc.phonenumber });
+
+            return userDetail;
+        });
+
+        const allUserDetails = [];
+        await Promise.all(userDetailsPromises.map(async (userDetailPromise) => {
+            const userDetail = await userDetailPromise;
+            if (userDetail) {
+                allUserDetails.push(userDetail);
+            }
+        }));
+
+        return res.status(200).json({
+            userDetails: allUserDetails,
+            fishingTripDetails: allActiveFishingTrips
+        });
     }
-    catch(err){
+    catch (err) {
         console.error(err);
         return res.status(200).json({
-            message : "Failed to load details from db"
+            message: "Failed to load details from db"
         });
     }
-} 
+}
 
-module.exports = {findAllHandler}
+module.exports = { findAllHandler }
