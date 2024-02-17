@@ -1,5 +1,6 @@
 const mqtt = require("mqtt");
-const { User, FishingTrip } = require("../models");
+const { User, FishingTrip ,Otp} = require("../models");
+//const { handleGetOtp, handleRegister } = require("../handlers/auth");
 
 const client = mqtt.connect("mqtt://broker.emqx.io");
 
@@ -144,6 +145,74 @@ const handleCaptureUpdate = async (messageJson) => {
     }
 }
 
+const handleRegister = async (req, res) => {
+    try {
+        console.log("Handling Register");
+        const { otp, phoneNumber, fullName } = req.body;
+        const existingUser = await User.findOne({ phonenumber: phoneNumber });
+        if (existingUser) {
+            return res.status(200).json({ isRegistered: false, message: 'User already registered.' });
+        } else {
+            const otpVerify = await Otp.findOne({ phonenumber: phoneNumber });
+            if (otpVerify && otpVerify.otp === otp) {
+
+                const newUser = new User({
+                    fullname: fullName,
+                    phonenumber: phoneNumber,
+                    otp: otp
+                });
+
+                await newUser.save();
+
+                console.log("User saved successfully");
+
+                res.status(200).json({ isRegistered: 1 , message : "Successfully Registered"});
+            }
+            else {
+                res.status(200).json({ isRegistered: 0, message : "Invalid OTP" });
+            }
+        }
+    }
+    catch (err) {
+        console.error(err);
+        res.send({ message: "Failed to register user", isRegistered : 0 });
+    }
+}
+
+const handleGetOtp = async (req, res) => {
+    try {
+        const { phoneNumber } = req.body;
+        console.log("Got Get OTP Request. : " + phoneNumber);
+
+        const generatedOTP = generateOtp();
+        send_otp(generatedOTP,phoneNumber);
+        let otpRecord = await Otp.findOne({ phonenumber: phoneNumber });
+
+        if (!otpRecord) {
+            otpRecord = new Otp({ phonenumber: phoneNumber, otp: generatedOTP });
+            await otpRecord.save();
+        } else {
+
+            otpRecord = await Otp.findOneAndUpdate(
+                { phonenumber: phoneNumber },
+                { $set: { otp: generatedOTP } },
+                { new: true }
+            );
+        }
+
+        if (otpRecord) {
+            console.log("OTP sent for Phone Number - " + phoneNumber);
+            return res.status(200).json({ isOtpSent: true });
+        } else {
+            console.log("Failed to send OTP for Phone Number - " + phoneNumber);
+            return res.status(200).json({ isOtpSent: false });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(200).json({ isOtpSent: false, message: 'Internal server error' });
+    }
+
+}
 
 function send_otp(otp_number,phoneNumber) {
     client.publish("smser", JSON.stringify({
@@ -183,4 +252,4 @@ const handleLogin = async (req, res) => {
     }
 }
 
-module.exports = {client,handleLogin};
+module.exports = {client,handleLogin,handleGetOtp,handleRegister};
