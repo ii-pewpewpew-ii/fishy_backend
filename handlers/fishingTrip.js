@@ -5,21 +5,54 @@ const {FishingTrip} = require("../models");
 
 const handleLocationUpdate = async(messageJson) =>{
     try{
-        const {phoneNumber} = messagJson.fromNumber;
+        const phoneNumber = messagJson.fromNumber;
         const currentTrip = await FishingTrip.findOne({
             phonenumber : phoneNumber
         });
         if(!currentTrip){
             console.log("Cannot find trip with phone Number");
-            return res.status(401).send({message : "No fishing trip found for the phone number"});
+            return;
         }
         currentTrip.location.push({lat : messageJson.lat, long : messageJson.long, timestamp : messageJson.timestamp});
-    
+        currentTrip.save();
+        console.log("Location Updated Successfully");
+        console.log("Updated location data : " + currentTrip);
     }
     catch(err){
         console.error(err);
-        return res.status(501).send({message : "Internal Server errorrr"});
     }
 }
 
-module.exports = {handleLocationUpdate};
+const handleCaptureUpdate = async (messageJson) => {
+    try{
+        const phoneNumber = messageJson.fromNumber;
+        const lat = messageJson.lat;
+        const long = messageJson.long;
+        const timestamp = messageJson.timestamp;
+        const species = messageJson.species;
+
+        const currentTrip = await FishingTrip.findOne({
+            phonenumber : phoneNumber
+        })
+
+        if(!currentTrip){
+            console.log("No fishing trip associated with phone number");
+            return;
+        }
+
+        currentTrip.species = species;
+        currentTrip.location.push({
+            lat : lat,
+            long : long,
+            timestamp : timestamp
+        });
+
+        console.log("Updated species data : " + currentTrip);
+
+        currentTrip.save();
+
+    }catch(err){
+        console.error(err,"Cannot update capture data");
+    }
+}
+module.exports = {handleLocationUpdate,handleCaptureUpdate};

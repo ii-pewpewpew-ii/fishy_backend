@@ -10,7 +10,7 @@ const handleRegister = async (req, res) => {
         const { otp, phoneNumber, fullName } = req.body;
         const existingUser = await User.findOne({ phonenumber: phoneNumber });
         if (existingUser) {
-            return res.status(400).json({ isRegistered: false, message: 'User already registered.' });
+            return res.status(200).json({ isRegistered: false, message: 'User already registered.' });
         } else {
             const otpVerify = await Otp.findOne({ phonenumber: phoneNumber });
             if (otpVerify && otpVerify.otp === otp) {
@@ -28,7 +28,7 @@ const handleRegister = async (req, res) => {
                 res.status(200).json({ isRegistered: 1 , message : "Successfully Registered"});
             }
             else {
-                res.status(401).json({ isRegistered: 0, message : "Invalid OTP" });
+                res.status(200).json({ isRegistered: 0, message : "Invalid OTP" });
             }
         }
     }
@@ -53,7 +53,7 @@ const handleCheckPhoneNumber = async (req, res) => {
         }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ isAvailable: false, message: 'Internal server error' });
+        res.status(200).json({ isAvailable: false, message: 'Internal server error' });
     }
 }
 
@@ -88,7 +88,7 @@ const handleGetOtp = async (req, res) => {
         }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ isOtpSent: false, message: 'Internal server error' });
+        res.status(200).json({ isOtpSent: false, message: 'Internal server error' });
     }
 
 }
@@ -101,20 +101,19 @@ const handleLogin = async (req, res) => {
         if (existingUser) {
             const otpVerify = await Otp.findOne({ phonenumber: phoneNumber });
             if (otpVerify && otpVerify.otp === otp) {
-
                 console.log("User saved successfully");
                 res.status(200).json({ isLoggedIn: 1 });
             }
             else {
-                res.status(401).send({ message: "Invalid OTP" });
+                res.status(200).send({ message: "Invalid OTP" });
             }
         } else {
-            return res.status(401).send({message : "Register before logging in"});
+            return res.status(200).send({message : "Register before logging in"});
         }
     }
     catch (err) {
         console.error(err);
-        res.send({ message: "Failed to register user" });
+        res.status(200).send({ message: "Failed to register user" });
     }
 }
 
