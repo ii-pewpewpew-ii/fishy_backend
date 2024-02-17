@@ -4,12 +4,14 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const routers = require('./routers');
 const app = express();
+const cors = require("cors");
 const client = require("./config/mqtt");
 client;
 
 
 
 require("dotenv").config();
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

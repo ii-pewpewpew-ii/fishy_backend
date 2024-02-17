@@ -5,20 +5,15 @@ console.log(URI);
 mongoose.connect(URI);
 
 const fishTripSchema = new mongoose.Schema({
-    id : {
-        type : String,
-        required : true,
-        unique : true
-    },
-    tripId : String,
+    id : String,
     phonenumber : String,
     location : [{
         lat : String,
         long : String,
-        timestamp : String
+        timestamp : String,
+        speciesfound :String,
     }],
-    speciesfound : {type : Array, "default" : []},
-    tripStatus : Number
+    tripstatus : Number
 })
 
 const FishingTrip = mongoose.model("fishingtrip",fishTripSchema);

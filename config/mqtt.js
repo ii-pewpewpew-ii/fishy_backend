@@ -21,14 +21,17 @@ client.on("message", (topic, message) => {
 })
 
 const handleMessage = async(parsedMessage)=>{
-    const {fishingTrip} = require("../handlers");
+    const {fishingTrip,admin} = require("../handlers");
     let message = parsedMessage.msg;
+    parsedMessage.from = parsedMessage.from.substr(3);
     let contents = message.split(' ');
     console.log(contents);
     if(contents[0] === 'G'){
         fishingTrip.handleLocationUpdate({fromNumber : parsedMessage.from,lat : contents[1],long : contents[2],timestamp : contents[3]});
     }else if(contents[0] === 'C'){
         fishingTrip.handleCaptureUpdate({fromNumber : parsedMessage.from,lat : contents[1],long : contents[2],timestamp : contents[3],species : contents[4]});
+    }else if(contents[0] === 'Trip' && contents[1] === 'started'){
+        admin.tripStartHandler(parsedMessage.from)
     }
 }
 module.exports = client;
