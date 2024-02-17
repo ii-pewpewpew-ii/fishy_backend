@@ -25,16 +25,16 @@ const handleRegister = async (req, res) => {
 
                 console.log("User saved successfully");
 
-                res.status(200).json({ isRegistered: 1 });
+                res.status(200).json({ isRegistered: 1 , message : "Successfully Registered"});
             }
             else {
-                res.status(401).send({ message: "Invalid OTP" });
+                res.status(401).json({ isRegistered: 0, message : "Invalid OTP" });
             }
         }
     }
     catch (err) {
         console.error(err);
-        res.send({ message: "Failed to register user" });
+        res.send({ message: "Failed to register user", isRegistered : 0 });
     }
 }
 
@@ -95,23 +95,14 @@ const handleGetOtp = async (req, res) => {
 
 const handleLogin = async (req, res) => {
     try {
-        console.log("Handling Register");
+        console.log("Handling Login");
         const { otp, phoneNumber } = req.body;
         const existingUser = await User.findOne({ phonenumber: phoneNumber });
         if (existingUser) {
             const otpVerify = await Otp.findOne({ phonenumber: phoneNumber });
             if (otpVerify && otpVerify.otp === otp) {
 
-                const newUser = new User({
-                    fullname: fullName,
-                    phonenumber: phoneNumber,
-                    otp: otp
-                });
-
-                await newUser.save();
-
                 console.log("User saved successfully");
-
                 res.status(200).json({ isLoggedIn: 1 });
             }
             else {

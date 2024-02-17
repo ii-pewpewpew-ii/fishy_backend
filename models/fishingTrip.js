@@ -14,7 +14,8 @@ const fishTripSchema = new mongoose.Schema({
     phoneNumber : String,
     location : [{
         lat : String,
-        long : String
+        long : String,
+        timestamp : String
     }],
     speciesFound : {type : Array, "default" : []},
     tripStatus : Number
