@@ -4,6 +4,10 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const routers = require('./routers');
 const app = express();
+
+
+
+
 require("dotenv").config();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

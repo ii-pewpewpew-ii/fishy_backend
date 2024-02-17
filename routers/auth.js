@@ -8,4 +8,6 @@ router.post("/getOTP",auth.handleGetOtp);
 
 router.post('/checkPhoneNo',auth.handleCheckPhoneNumber);
 
+router.post("/login",auth.handleLogin);
+
 module.exports = router;
