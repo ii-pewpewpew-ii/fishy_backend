@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const { User, Otp } = require("../models");
 const router = require("../routers/auth");
-const uuidv4 = require('uuid');
+const {v4 :  uuidv4} = require('uuid');
 
 const handleRegister = async (req, res) => {
     try {
@@ -11,17 +11,24 @@ const handleRegister = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ isRegistered: false, message: 'User already registered.' });
         } else {
-            const newUser = new User({
-                fullname: fullName,
-                phonenumber: phoneNumber,
-                otp: otp
-            });
+            const otpVerify = await Otp.findOne({ phonenumber: phoneNumber });
+            if (otpVerify && otpVerify.otp === otp) {
 
-            await newUser.save();
+                const newUser = new User({
+                    fullname: fullName,
+                    phonenumber: phoneNumber,
+                    otp: otp
+                });
 
-            console.log("User saved successfully");
+                await newUser.save();
 
-            res.status(200).json({ isRegistered: 1 });
+                console.log("User saved successfully");
+
+                res.status(200).json({ isRegistered: 1 });
+            }
+            else {
+                res.status(401).send({ message: "Invalid OTP" });
+            }
         }
     }
     catch (err) {
@@ -30,7 +37,7 @@ const handleRegister = async (req, res) => {
     }
 }
 
-const handleCheckPhoneNumber = async (req,res)=>{
+const handleCheckPhoneNumber = async (req, res) => {
     try {
         const { phoneNumber } = req.body;
         console.log("Got Check Phone Number Request. : " + phoneNumber);
@@ -84,12 +91,10 @@ const handleGetOtp = async (req, res) => {
 
 }
 
-function generateOtp(){
-    const uuid = uuidv4(); 
-    const uuidDigits = uuid.replace('/\D/g', ''); 
-    const randomNumber = parseInt(uuidDigits.substring(0, 6)); 
-    console.log('Random Number : ' + randomNumber);
-    return randomNumber;
+function generateOtp() {
+    let otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(otp);
+    return otp;
 }
 
-module.exports = {handleRegister,handleCheckPhoneNumber,handleGetOtp};
+module.exports = { handleRegister, handleCheckPhoneNumber, handleGetOtp };
